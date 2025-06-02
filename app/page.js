@@ -1,103 +1,116 @@
-import Image from "next/image";
+"use client";
+import { useState } from "react";
 
 export default function Home() {
-  return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm/6 text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-[family-name:var(--font-geist-mono)] font-semibold">
-              app/page.js
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+  const [isPromptOpen, setIsPromptOpen] = useState(false);
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+  return (
+    <div className="flex h-screen w-full bg-[#f8f7fd]">
+      {/* Note List Section */}
+      <div
+        className={`${
+          isPromptOpen ? "w-[calc(100%-56px)]" : "w-[calc(100%-56px)]"
+        } transition-all duration-300 p-6 overflow-y-auto`}
+      >
+        <div className="mx-auto space-y-8">
+          {/* Header */}
+          <header className="flex items-center justify-between mb-8">
+            <h1 className="text-2xl font-semibold text-[#594d8c]">My Notes</h1>
+            <button className="px-4 py-2 bg-[#7b6eac] hover:bg-[#6a5d9b] text-white rounded-lg transition-colors duration-200 flex items-center space-x-2 shadow-sm">
+              <span>+ New Note</span>
+            </button>
+          </header>
+
+          {/* Pinned Notes Section */}
+          <section className="bg-white rounded-2xl p-6 shadow-sm border border-[#e9e8f8]">
+            <h2 className="text-[#594d8c] font-medium mb-4 flex items-center space-x-2">
+              <span>📌</span>
+              <span>Pinned Notes</span>
+            </h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {/* Example Pinned Note Card */}
+              <div className="bg-[#f8f7fd] p-4 rounded-xl hover:shadow-md transition-all duration-200 border border-[#e9e8f8] group">
+                <div className="flex items-start justify-between">
+                  <h3 className="font-medium text-[#594d8c]">Meeting Notes</h3>
+                  <button className="text-[#a69ed9] opacity-0 group-hover:opacity-100 transition-opacity">
+                    ⋮
+                  </button>
+                </div>
+                <p className="text-sm text-[#7b6eac] mt-2 line-clamp-2">
+                  Discussion points for the weekly team sync...
+                </p>
+                <div className="flex items-center justify-between mt-4">
+                  <span className="text-xs text-[#a69ed9]">2 hours ago</span>
+                  <div className="flex items-center space-x-2">
+                    <span className="text-lg">📝</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          {/* All Notes Section */}
+          <section className="bg-white rounded-2xl p-6 shadow-sm border border-[#e9e8f8]">
+            <h2 className="text-[#594d8c] font-medium mb-4">All Notes</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {/* Note cards will go here */}
+            </div>
+          </section>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+      </div>
+      {/* Modernized Prompt Panel */}
+      <div
+        className={`fixed right-0 top-0 h-screen ${
+          isPromptOpen ? "w-1/3" : "w-14"
+        } transition-all duration-300 bg-white shadow-lg border-l border-[#e9e8f8]`}
+      >
+        <div className="flex items-center justify-between border-b border-[#e9e8f8]">
+          {isPromptOpen && (
+            <h3 className="text-[#594d8c] font-medium p-4 flex items-center space-x-2">
+              <span className="text-xl">💭</span>
+              <span>Writing Prompts</span>
+            </h3>
+          )}
+          <button
+            onClick={() => setIsPromptOpen(!isPromptOpen)}
+            className="w-14 h-14 flex items-center justify-center hover:bg-[#f8f7fd] text-[#7b6eac] relative group shrink-0"
+          >
+            {isPromptOpen ? (
+              <span className="text-xl">→</span>
+            ) : (
+              <span className="text-xl">💭</span>
+            )}
+
+            {/* Modern Tooltip - only show when panel is closed */}
+            {!isPromptOpen && (
+              <div className="absolute left-0 transform -translate-x-full top-1/2 -translate-y-1/2 pointer-events-none opacity-0 group-hover:opacity-100 transition-all duration-200 bg-[#594d8c] text-white px-3 py-1.5 rounded-lg text-sm ml-2 shadow-lg">
+                Writing Prompts
+              </div>
+            )}
+          </button>
+        </div>
+
+        {isPromptOpen && (
+          <div className="p-6 overflow-y-auto h-[calc(100vh-56px)]">
+            <div className="space-y-4">
+              <div className="bg-[#f8f7fd] p-5 rounded-xl hover:shadow-md transition-all duration-200 border border-[#e9e8f8]">
+                <p className="text-[#7b6eac] leading-relaxed">
+                  If you could travel anywhere in time, where would you go and
+                  why?
+                </p>
+                <button className="mt-4 w-full px-4 py-2.5 bg-[#7b6eac] hover:bg-[#6a5d9b] text-white rounded-lg transition-colors duration-200 flex items-center justify-center space-x-2">
+                  <span>Use Prompt</span>
+                  <span>💭</span>
+                </button>
+              </div>
+              <button className="w-full px-4 py-2.5 bg-[#e2e0f4] hover:bg-[#d8d5f2] text-[#7b6eac] rounded-lg transition-colors duration-200 flex items-center justify-center space-x-2">
+                <span>Generate New</span>
+                <span>✏️</span>
+              </button>
+            </div>
+          </div>
+        )}
+      </div>
     </div>
   );
 }
