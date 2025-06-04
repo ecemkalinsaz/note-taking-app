@@ -1,31 +1,35 @@
 "use client";
 import { useState } from "react";
+import Image from "next/image";
 
 export default function Home() {
   const [isPromptOpen, setIsPromptOpen] = useState(false);
 
   return (
     <div className="flex h-screen w-full bg-[#f8f7fd]">
-      {/* Note List Section */}
       <div
         className={`${
           isPromptOpen ? "w-[calc(100%-56px)]" : "w-[calc(100%-56px)]"
-        } transition-all duration-300 p-6 overflow-y-auto`}
+        } transition-all duration-300 overflow-y-auto flex flex-col`}
       >
-        <div className="mx-auto space-y-8">
-          {/* Header */}
-          <header className="flex items-center justify-between mb-8">
-            <h1 className="text-2xl font-semibold text-[#594d8c]">My Notes</h1>
-            <button className="px-4 py-2 bg-[#7b6eac] hover:bg-[#6a5d9b] text-white rounded-lg transition-colors duration-200 flex items-center space-x-2 shadow-sm">
-              <span>+ New Note</span>
-            </button>
+        {/* Main Content */}
+        <div className="flex-1 px-6 space-y-8 bg-white">
+          {/* Content Header - Removed New Note button */}
+          <header className="flex items-center pt-8 mb-8">
+            <div className="flex items-center space-x-3">
+              <span className="text-2xl">📝</span>
+              <h1 className="text-2xl font-semibold text-[#594d8c]">
+                All Notes
+              </h1>
+            </div>
           </header>
 
-          {/* Pinned Notes Section */}
-          <section className="bg-white rounded-2xl p-6 shadow-sm border border-[#e9e8f8]">
+          {/* Notes Sections */}
+          <section className="bg-[#f8f7fd] rounded-2xl p-6 shadow-sm border border-[#e9e8f8] mb-8">
+            {/* Pinned Notes Section */}
             <h2 className="text-[#594d8c] font-medium mb-4 flex items-center space-x-2">
               <span>📌</span>
-              <span>Pinned Notes</span>
+              <span>Pinned</span>
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {/* Example Pinned Note Card */}
@@ -47,11 +51,9 @@ export default function Home() {
                 </div>
               </div>
             </div>
-          </section>
 
-          {/* All Notes Section */}
-          <section className="bg-white rounded-2xl p-6 shadow-sm border border-[#e9e8f8]">
-            <h2 className="text-[#594d8c] font-medium mb-4">All Notes</h2>
+            {/* All Notes Section */}
+            <h2 className="text-[#594d8c] font-medium mb-4">-</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {/* Note cards will go here */}
             </div>
