@@ -2,6 +2,7 @@
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
+import FolderItem from './FolderItem'
 
 export default function Sidebar() {
   const pathname = usePathname()
@@ -47,6 +48,18 @@ export default function Sidebar() {
     }
   }
 
+  const handleRenameFolder = (folderId, newName) => {
+    setFolders(folders.map(folder => 
+      folder.id === folderId 
+        ? { ...folder, name: newName }
+        : folder
+    ))
+  }
+
+  const handleDeleteFolder = (folderId) => {
+    setFolders(folders.filter(f => f.id !== folderId))
+  }
+
   return (
     <>
       <aside className="w-64 h-screen bg-white border-r border-[#e9e8f8] p-4 flex flex-col">
@@ -84,16 +97,13 @@ export default function Sidebar() {
           </div>
           <nav className="space-y-1">
             {folders.map(folder => (
-              <Link
+              <FolderItem
                 key={folder.id}
-                href={`/folders/${folder.id}`}
-                className={`flex items-center space-x-2 px-3 py-2 rounded-lg hover:bg-[#f8f7fd] text-[#594d8c] ${
-                  pathname === `/folders/${folder.id}` ? 'bg-[#f8f7fd] font-medium' : ''
-                }`}
-              >
-                <span>{folder.icon}</span>
-                <span>{folder.name}</span>
-              </Link>
+                folder={folder}
+                isActive={pathname === `/folders/${folder.id}`}
+                onRename={handleRenameFolder}
+                onDelete={handleDeleteFolder}
+              />
             ))}
           </nav>
         </div>
