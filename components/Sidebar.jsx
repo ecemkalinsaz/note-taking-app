@@ -109,10 +109,20 @@ export default function Sidebar() {
         </div>
       </aside>
 
-      {/* Create Folder Modal */}
+      {/* Updated Create Folder Modal */}
       {isModalOpen && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black/20">
-          <div className="bg-white rounded-xl shadow-lg w-96 p-6 border border-[#e9e8f8]">
+        <div 
+          className="fixed inset-0 flex items-center justify-center bg-black/20 z-[100]" 
+          onClick={(e) => {
+            if (e.target === e.currentTarget) {
+              setIsModalOpen(false)
+            }
+          }}
+        >
+          <div 
+            className="bg-white rounded-xl shadow-lg w-96 p-6 border border-[#e9e8f8] relative"
+            onClick={e => e.stopPropagation()}
+          >
             <div className="flex justify-between items-center mb-4">
               <h2 className="text-lg font-medium text-[#594d8c]">Create New Folder</h2>
               <button 
@@ -130,6 +140,7 @@ export default function Sidebar() {
                 placeholder="Folder name"
                 className="w-full p-3 rounded-lg border border-[#e9e8f8] bg-white focus:outline-none focus:ring-2 focus:ring-[#7b6eac] mb-4"
                 autoFocus
+                onKeyDown={e => e.stopPropagation()}
               />
               <div className="flex justify-end space-x-2">
                 <button
