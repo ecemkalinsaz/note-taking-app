@@ -36,7 +36,7 @@ export default function Home() {
               <div className="bg-[#f8f7fd] p-4 rounded-xl hover:shadow-md transition-all duration-200 border border-[#e9e8f8] group">
                 <div className="flex items-start justify-between">
                   <h3 className="font-medium text-[#594d8c]">Meeting Notes</h3>
-                  <button className="text-[#a69ed9] opacity-0 group-hover:opacity-100 transition-opacity">
+                  <button className="text-[#e8f1fc] opacity-0 group-hover:opacity-100 transition-opacity">
                     ⋮
                   </button>
                 </div>
@@ -44,7 +44,7 @@ export default function Home() {
                   Discussion points for the weekly team sync...
                 </p>
                 <div className="flex items-center justify-between mt-4">
-                  <span className="text-xs text-[#a69ed9]">2 hours ago</span>
+                  <span className="text-xs text-[#e8f1fc]">2 hours ago</span>
                   <div className="flex items-center space-x-2">
                     <span className="text-lg">📝</span>
                   </div>

@@ -25,13 +25,13 @@ export default function PinnedNotes({ notes, currentFolder, onTogglePin }) {
               </div>
               <button 
                 onClick={() => onTogglePin(note.id)}
-                className="text-[#a69ed9] hover:text-[#7b6eac] transition-colors"
+                className="text-[#e8f1fc] hover:text-[#7b6eac] transition-colors"
               >
                 📌
               </button>
             </div>
             <p className="text-sm text-[#594d8c] mt-2 line-clamp-2">{note.snippet}</p>
-            <time className="text-xs text-[#a69ed9] mt-2 block">
+            <time className="text-xs text-[#e8f1fc] mt-2 block">
               {new Date(note.date).toLocaleDateString()}
             </time>
           </div>

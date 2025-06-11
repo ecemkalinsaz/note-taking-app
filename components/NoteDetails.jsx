@@ -82,17 +82,7 @@ export default function NoteDetails({
     { icon: 'B', command: 'bold', title: 'Bold' },
     { icon: 'I', command: 'italic', title: 'Italic' },
     { icon: 'U', command: 'underline', title: 'Underline' },
-    { icon: 'S', command: 'strikeThrough', title: 'Strike through' },
-    {
-      icon: '•',
-      command: 'insertUnorderedList',
-      title: 'Bullet list'
-    },
-    {
-      icon: '1.',
-      command: 'insertOrderedList',
-      title: 'Number list'
-    }
+    { icon: 'S', command: 'strikeThrough', title: 'Strike through' }
   ]
 
   const handleSave = () => {
@@ -108,6 +98,27 @@ export default function NoteDetails({
     }
   }
 
+  // Add click outside handler for dropdowns
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      const sizeButton = event.target.closest('[data-size-button]')
+      const sizeMenu = event.target.closest('[data-size-menu]')
+      const colorButton = event.target.closest('[data-color-button]')
+      const colorMenu = event.target.closest('[data-color-menu]')
+
+      if (!sizeButton && !sizeMenu) {
+        setShowFontSize(false)
+      }
+
+      if (!colorButton && !colorMenu) {
+        setShowColors(false)
+      }
+    }
+
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => document.removeEventListener('mousedown', handleClickOutside)
+  }, [])
+
   return (
     <div className="flex-1 bg-white pr-20">
       {(isCreating || isEditing) ? (
@@ -118,24 +129,26 @@ export default function NoteDetails({
               placeholder="Note title"
               value={editingNote.title}
               onChange={(e) => setEditingNote(prev => ({ ...prev, title: e.target.value }))}
-              className="w-full text-xl font-medium text-[#594d8c] placeholder-[#a69ed9] bg-transparent focus:outline-none"
+              className="w-full text-xl font-medium text-[#345995] placeholder:text-[#b4c0d3] bg-transparent focus:outline-none"
             />
-            <div
-              ref={textareaRef}
-              contentEditable
-              className="w-full h-[calc(100vh-300px)] mt-4 text-[#594d8c] focus:outline-none"
-              onInput={(e) => setEditingNote(prev => ({ ...prev, content: e.target.innerHTML }))}
-              placeholder="Start writing..."
-            />
+            <div className="relative">
+              <div
+                ref={textareaRef}
+                contentEditable
+                className="w-full h-[calc(100vh-300px)] mt-4 text-[#345995] focus:outline-none"
+                onInput={(e) => setEditingNote(prev => ({ ...prev, content: e.target.innerHTML }))}
+              />
+            </div>
           </div>
 
           {/* Formatting Toolbar */}
-          <div className="absolute bottom-[68px] left-0 right-0 p-2 bg-white border-t border-[#e9e8f8] flex items-center space-x-2">
+          <div className="absolute bottom-[68px] left-0 right-0 p-2 bg-white border-t border-[#e0e7f1] flex items-center space-x-2">
             {/* Font Size Button */}
             <div className="relative">
               <button
+                data-size-button
                 onClick={() => setShowFontSize(!showFontSize)}
-                className="px-3 py-2 flex items-center space-x-2 hover:bg-[#f8f7fd] rounded text-[#594d8c] transition-colors"
+                className="px-3 py-2 flex items-center space-x-2 hover:bg-[#f2f6fc] rounded text-[#345995] transition-colors"
               >
                 <span className="text-sm">
                   {fontSizes.find(s => s.value === selectedSize)?.label || 'Size'}
@@ -144,7 +157,10 @@ export default function NoteDetails({
               </button>
               
               {showFontSize && (
-                <div className="absolute bottom-full left-0 mb-1 w-36 bg-white rounded-lg shadow-lg border border-[#e9e8f8] py-1 z-50">
+                <div 
+                  data-size-menu
+                  className="absolute bottom-full left-0 mb-1 w-36 bg-white rounded-lg shadow-lg border border-[#e0e7f1] py-1 z-50"
+                >
                   {fontSizes.map(size => (
                     <button
                       key={size.value}
@@ -153,8 +169,8 @@ export default function NoteDetails({
                         setSelectedSize(size.value)
                         setShowFontSize(false)
                       }}
-                      className={`w-full px-4 py-2 text-left text-sm hover:bg-[#f8f7fd] transition-colors flex items-center justify-between ${
-                        selectedSize === size.value ? 'text-[#7b6eac] font-medium' : 'text-[#594d8c]'
+                      className={`w-full px-4 py-2 text-left text-sm hover:bg-[#f2f6fc] transition-colors flex items-center justify-between ${
+                        selectedSize === size.value ? 'text-[#345995] font-medium' : 'text-[#345995]'
                       }`}
                       style={{ fontSize: size.size }}
                     >
@@ -169,18 +185,22 @@ export default function NoteDetails({
             {/* Color Picker Button */}
             <div className="relative">
               <button
+                data-color-button
                 onClick={() => setShowColors(!showColors)}
-                className="px-3 py-2 flex items-center space-x-2 hover:bg-[#f8f7fd] rounded text-[#594d8c] transition-colors"
+                className="px-3 py-2 flex items-center space-x-2 hover:bg-[#f2f6fc] rounded text-[#345995] transition-colors"
               >
                 <div 
-                  className="w-4 h-4 rounded-full border border-[#e9e8f8]" 
+                  className="w-4 h-4 rounded-full border border-[#e0e7f1]" 
                   style={{ backgroundColor: selectedColor }}
                 />
                 <span className="text-xs">▼</span>
               </button>
 
               {showColors && (
-                <div className="absolute bottom-full left-0 mb-1 w-36 bg-white rounded-lg shadow-lg border border-[#e9e8f8] p-2 z-50">
+                <div 
+                  data-color-menu
+                  className="absolute bottom-full left-0 mb-1 w-36 bg-white rounded-lg shadow-lg border border-[#e0e7f1] p-2 z-50"
+                >
                   <div className="grid grid-cols-5 gap-1">
                     {textColors.map(color => (
                       <button
@@ -190,7 +210,7 @@ export default function NoteDetails({
                           setSelectedColor(color.value)
                           setShowColors(false)
                         }}
-                        className={`w-6 h-6 rounded-full border border-[#e9e8f8] hover:scale-110 transition-transform ${
+                        className={`w-6 h-6 rounded-full border border-[#e0e7f1] hover:scale-110 transition-transform ${
                           selectedColor === color.value ? 'ring-2 ring-[#7b6eac] ring-offset-2' : ''
                         }`}
                         style={{ backgroundColor: color.value }}
@@ -202,13 +222,13 @@ export default function NoteDetails({
               )}
             </div>
 
-            <div className="h-6 w-[1px] bg-[#e9e8f8] mx-2" />
+            <div className="h-6 w-[1px] bg-[#e0e7f1] mx-2" />
 
             {formatOptions.map(option => (
               <button
                 key={option.command}
                 onClick={() => handleFormat(option.command)}
-                className="p-2 hover:bg-[#f8f7fd] rounded text-[#594d8c] transition-colors"
+                className="p-2 hover:bg-[#f2f6fc] rounded text-[#345995] transition-colors"
                 title={option.title}
               >
                 {option.icon}
@@ -217,17 +237,17 @@ export default function NoteDetails({
           </div>
 
           {/* Save/Cancel Buttons */}
-          <div className="absolute bottom-0 left-0 right-0 p-4 bg-white border-t border-[#e9e8f8]">
+          <div className="absolute bottom-0 left-0 right-0 p-4 bg-white border-t border-[#e0e7f1]">
             <div className="flex justify-end space-x-2">
               <button
                 onClick={onCancel}
-                className="px-4 py-2 text-[#594d8c] hover:bg-[#f8f7fd] rounded-lg transition-colors"
+                className="px-4 py-2 text-[#345995] hover:bg-[#f2f6fc] rounded-lg transition-colors"
               >
                 Cancel
               </button>
               <button
                 onClick={handleSave}
-                className="px-4 py-2 bg-[#7b6eac] hover:bg-[#6a5d9b] text-white rounded-lg transition-colors shadow-sm"
+                className="px-4 py-2 bg-[#EAC435] hover:bg-[#d4b02f] text-white rounded-lg transition-colors shadow-sm"
               >
                 {isEditing ? 'Update Note' : 'Save Note'}
               </button>
@@ -236,15 +256,15 @@ export default function NoteDetails({
         </div>
       ) : note ? ( // Add conditional check for note
         <div className="p-6">
-          <h1 className="text-xl font-medium text-[#594d8c]">{note.title}</h1>
+          <h1 className="text-xl font-medium text-[#345995]">{note.title}</h1>
           <div 
-            className="mt-4 text-[#594d8c]"
+            className="mt-4 text-[#345995]"
             dangerouslySetInnerHTML={{ __html: note.content }}
           />
         </div>
       ) : (
         // Show placeholder when no note is selected
-        <div className="h-full flex items-center justify-center text-[#a69ed9]">
+        <div className="h-full flex items-center justify-center text-[#b4c0d3]">
           <p>Select a note or create a new one</p>
         </div>
       )}

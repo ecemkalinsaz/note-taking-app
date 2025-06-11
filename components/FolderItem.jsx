@@ -1,5 +1,5 @@
 'use client'
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
 
 export default function FolderItem({ 
@@ -8,81 +8,102 @@ export default function FolderItem({
   onRename, 
   onDelete 
 }) {
-  const [activeMenu, setActiveMenu] = useState(false)
+  const [showMenu, setShowMenu] = useState(false)
   const [isEditing, setIsEditing] = useState(false)
-  const [editName, setEditName] = useState(folder.name)
+  const [editedName, setEditedName] = useState(folder.name)
+  const menuRef = useRef(null)
 
-  const truncateName = (name, maxLength = 20) => {
-    return name.length > maxLength ? name.substring(0, maxLength) + '...' : name
-  }
+  // Add click outside handler
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (menuRef.current && !menuRef.current.contains(event.target)) {
+        setShowMenu(false)
+      }
+    }
+
+    if (showMenu) {
+      document.addEventListener('mousedown', handleClickOutside)
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside)
+    }
+  }, [showMenu])
 
   const handleRename = () => {
-    if (editName.trim() && editName !== folder.name) {
-      onRename(folder.id, editName.trim())
+    setIsEditing(true)
+    setShowMenu(false)
+  }
+
+  const handleSubmitRename = () => {
+    if (editedName.trim()) {
+      onRename(folder.id, editedName.trim())
+      setIsEditing(false)
     }
-    setIsEditing(false)
-    setActiveMenu(false)
+  }
+
+  const handleDelete = () => {
+    onDelete(folder.id)
+    setShowMenu(false)
   }
 
   return (
-    <div className="relative group">
+    <div className="relative">
       <Link
         href={`/folders/${folder.id}`}
-        className={`flex items-center justify-between px-3 py-2 rounded-lg hover:bg-[#f8f7fd] text-[#594d8c] ${
-          isActive ? 'bg-[#f8f7fd] font-medium' : ''
+        className={`flex items-center justify-between px-3 py-2 rounded-lg hover:bg-[#f2f6fc] text-[#345995] group ${
+          isActive ? 'bg-[#f2f6fc] font-medium' : ''
         }`}
       >
-        <div className="flex items-center space-x-2 min-w-0"> {/* Added min-w-0 for proper truncation */}
-          <span className="flex-shrink-0">{folder.icon}</span>
+        <div className="flex items-center space-x-2 min-w-0 flex-1">
+          <span>{folder.icon}</span>
           {isEditing ? (
             <input
               type="text"
-              value={editName}
-              onChange={(e) => setEditName(e.target.value)}
-              onBlur={handleRename}
-              onKeyDown={(e) => e.key === 'Enter' && handleRename()}
-              className="bg-transparent border-b border-[#7b6eac] focus:outline-none px-1"
+              value={editedName}
+              onChange={(e) => setEditedName(e.target.value)}
+              onBlur={handleSubmitRename}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  handleSubmitRename()
+                }
+              }}
+              className="bg-transparent focus:outline-none w-full"
               autoFocus
             />
           ) : (
-            <span className="truncate" title={folder.name}>
-              {truncateName(folder.name)}
-            </span>
+            <span className="truncate">{folder.name}</span>
           )}
         </div>
         <button
           onClick={(e) => {
             e.preventDefault()
-            setActiveMenu(!activeMenu)
+            setShowMenu(!showMenu)
           }}
-          className="opacity-0 group-hover:opacity-100 hover:bg-[#e9e8f8] p-1 rounded transition-all flex-shrink-0"
+          className="opacity-0 group-hover:opacity-100 hover:bg-[#e0e7f1] p-1 rounded transition-all ml-2 shrink-0"
         >
           ⋮
         </button>
       </Link>
 
-      {/* Context Menu */}
-      {activeMenu && (
-        <div className="absolute right-0 mt-1 w-36 bg-white rounded-lg shadow-lg border border-[#e9e8f8] py-1 z-50">
+      {showMenu && (
+        <div
+          ref={menuRef}
+          className="absolute right-0 top-full mt-1 w-36 bg-white rounded-lg shadow-lg border border-[#e0e7f1] py-1 z-50"
+        >
           <button
-            onClick={() => {
-              setIsEditing(true)
-              setActiveMenu(false)
-            }}
-            className="w-full px-4 py-2 text-left text-sm text-[#594d8c] hover:bg-[#f8f7fd] flex items-center space-x-2"
+            onClick={handleRename}
+            className="w-full px-4 py-2 text-left text-sm text-[#345995] hover:bg-[#f2f6fc] flex items-center space-x-2"
           >
-            <span>✏️</span>
             <span>Rename</span>
+            <span>✏️</span>
           </button>
           <button
-            onClick={() => {
-              onDelete(folder.id)
-              setActiveMenu(false)
-            }}
-            className="w-full px-4 py-2 text-left text-sm text-red-500 hover:bg-[#f8f7fd] flex items-center space-x-2"
+            onClick={handleDelete}
+            className="w-full px-4 py-2 text-left text-sm text-red-500 hover:bg-[#f2f6fc] flex items-center space-x-2"
           >
-            <span>🗑️</span>
             <span>Delete</span>
+            <span>🗑️</span>
           </button>
         </div>
       )}
