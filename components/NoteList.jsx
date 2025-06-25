@@ -7,9 +7,9 @@ export default function NoteList({ notes: initialNotes, currentFolder }) {
   const [notes, setNotes] = useState(() => {
     if (typeof window !== 'undefined') {
       const savedNotes = localStorage.getItem('notes')
-      return savedNotes ? JSON.parse(savedNotes) : initialNotes
+      return savedNotes ? JSON.parse(savedNotes) : []
     }
-    return initialNotes
+    return []
   })
   const [selectedNote, setSelectedNote] = useState(null)
   const [isCreatingNote, setIsCreatingNote] = useState(false)
@@ -23,7 +23,9 @@ export default function NoteList({ notes: initialNotes, currentFolder }) {
 
   // Save notes to localStorage whenever they change
   useEffect(() => {
-    localStorage.setItem('notes', JSON.stringify(notes))
+    if (notes.length > 0) {
+      localStorage.setItem('notes', JSON.stringify(notes))
+    }
   }, [notes])
 
   // Update handleSaveNote to actually save the note
@@ -31,16 +33,17 @@ export default function NoteList({ notes: initialNotes, currentFolder }) {
     const note = {
       id: Date.now().toString(),
       ...noteData,
-      title: noteData.title.trim() || 'New Note', // Set default title if empty
+      title: noteData.title.trim() || 'New Note',
       date: new Date().toISOString(),
       folderId: currentFolder,
       isPinned: false,
-      snippet: noteData.content.slice(0, 100)
+      snippet: noteData.content.replace(/<[^>]*>/g, '').slice(0, 100),
+      titleStyle: noteData.titleStyle // Title stilini de kaydet
     }
 
     setNotes(prevNotes => [...prevNotes, note])
     setIsCreatingNote(false)
-    setSelectedNote(note) // Select the newly created note
+    setSelectedNote(note) // Bu zaten doğru çünkü note objesi titleStyle'ı içeriyor
   }
 
   // Get current folder info
@@ -130,23 +133,34 @@ export default function NoteList({ notes: initialNotes, currentFolder }) {
     setIsCreatingNote(true)
   }
 
-  const handleUpdateNote = (noteData) => {
-    setNotes(prevNotes => prevNotes.map(note => 
-      note.id === noteData.id 
-        ? {
-            ...note,
-            ...noteData,
-            date: new Date().toISOString(),
-            snippet: noteData.content.slice(0, 100)
-          }
-        : note
-    ))
+  // handleUpdateNote fonksiyonunu düzelt
+  const handleUpdateNote = (noteId, noteData) => {
+    setNotes(prevNotes => 
+      prevNotes.map(note => 
+        note.id === noteId 
+          ? {
+              ...note,
+              title: noteData.title.trim() || 'New Note',
+              content: noteData.content,
+              titleStyle: noteData.titleStyle, // Title stilini güncelle
+              snippet: noteData.content.replace(/<[^>]*>/g, '').slice(0, 100),
+              date: new Date().toISOString()
+            }
+          : note
+      )
+    )
     setIsEditing(false)
-    setSelectedNote(prevNote => ({
-      ...prevNote,
-      ...noteData,
+    
+    // selectedNote'u güncellerken titleStyle'ı da dahil et
+    const updatedNote = {
+      ...selectedNote,
+      title: noteData.title.trim() || 'New Note',
+      content: noteData.content,
+      titleStyle: noteData.titleStyle,
+      snippet: noteData.content.replace(/<[^>]*>/g, '').slice(0, 100),
       date: new Date().toISOString()
-    }))
+    }
+    setSelectedNote(updatedNote)
   }
 
   const NoteListItem = ({ note }) => (

@@ -19,6 +19,13 @@ export default function NoteDetails({
   const [showColors, setShowColors] = useState(false)
   const [selectedSize, setSelectedSize] = useState('3')
   const [selectedColor, setSelectedColor] = useState('#594d8c')
+  const [activeField, setActiveField] = useState('content') // 'title' veya 'content'
+  const [titleStyle, setTitleStyle] = useState({
+    color: '#345995',
+    fontWeight: 'normal',
+    fontStyle: 'normal',
+    textDecoration: 'none'
+  })
 
   // Reset both title and content when isCreating changes
   useEffect(() => {
@@ -27,7 +34,12 @@ export default function NoteDetails({
         title: '',
         content: ''
       })
-      // Clear the contentEditable div content
+      setTitleStyle({
+        color: '#345995',
+        fontWeight: 'normal',
+        fontStyle: 'normal',
+        textDecoration: 'none'
+      })
       if (textareaRef.current) {
         textareaRef.current.innerHTML = ''
       }
@@ -36,20 +48,65 @@ export default function NoteDetails({
         title: note.title,
         content: note.content
       })
-      if (textareaRef.current) {
-        textareaRef.current.innerHTML = note.content || ""
-      }
+      setTitleStyle(note.titleStyle || {
+        color: '#345995',
+        fontWeight: 'normal',
+        fontStyle: 'normal',
+        textDecoration: 'none'
+      })
+      // setTimeout ile DOM update'ini bekle
+      setTimeout(() => {
+        if (textareaRef.current) {
+          textareaRef.current.innerHTML = note.content || ""
+        }
+      }, 0)
     } else if (note) {
       setEditingNote({
         title: note.title,
         content: note.content
       })
+      setTimeout(() => {
+        if (textareaRef.current) {
+          textareaRef.current.innerHTML = note.content || ""
+        }
+      }, 0)
     }
   }, [isCreating, isEditing, note])
 
   const handleFormat = (command, value = null) => {
-    document.execCommand(command, false, value)
-    textareaRef.current?.focus()
+    if (activeField === 'content') {
+      document.execCommand(command, false, value)
+      textareaRef.current?.focus()
+      
+      // Format uygulandıktan sonra state'i güncelle
+      setTimeout(() => {
+        if (textareaRef.current) {
+          setEditingNote(prev => ({ 
+            ...prev, 
+            content: textareaRef.current.innerHTML 
+          }))
+        }
+      }, 10)
+      
+    } else if (activeField === 'title') {
+      // Title için stil uygula
+      setTitleStyle(prev => {
+        switch (command) {
+          case 'foreColor':
+            return { ...prev, color: value }
+          case 'bold':
+            return { ...prev, fontWeight: prev.fontWeight === 'bold' ? 'normal' : 'bold' }
+          case 'italic':
+            return { ...prev, fontStyle: prev.fontStyle === 'italic' ? 'normal' : 'italic' }
+          case 'underline':
+            return { ...prev, textDecoration: prev.textDecoration.includes('underline') ? 'none' : 'underline' }
+          case 'strikeThrough':
+            return { ...prev, textDecoration: prev.textDecoration.includes('line-through') ? 'none' : 'line-through' }
+          default:
+            return prev
+        }
+      })
+    }
   }
 
   const fontSizes = [
@@ -61,11 +118,12 @@ export default function NoteDetails({
   ]
 
   const textColors = [
-    { label: 'Default', value: '#594d8c' },
-    { label: 'Purple', value: '#7b6eac' },
-    { label: 'Red', value: '#e44747' },
-    { label: 'Green', value: '#47e447' },
-    { label: 'Blue', value: '#4747e4' }
+    { label: 'Blue', value: '#345995' },
+    { label: 'Green', value: '#8DA168' },
+    { label: 'Orange', value: '#E28413' },
+    { label: 'Purple', value: '#9B7EDE' },
+    { label: 'Red', value: '#DE3C4B' },
+    
   ]
 
   const formatOptions = [
@@ -86,13 +144,17 @@ export default function NoteDetails({
   ]
 
   const handleSave = () => {
+    // Kaydetmeden önce en güncel içeriği doğrudan DOM'dan al
+    const currentContent = textareaRef.current ? textareaRef.current.innerHTML : editingNote.content;
+    
     const noteData = {
       title: editingNote.title,
-      content: textareaRef.current.innerHTML
+      content: currentContent, // DOM'dan alınan güncel içerik
+      titleStyle: titleStyle
     }
 
     if (isEditing && note) {
-      onUpdate({ ...noteData, id: note.id })
+      onUpdate(note.id, noteData)
     } else {
       onSave(noteData)
     }
@@ -129,14 +191,27 @@ export default function NoteDetails({
               placeholder="Note title"
               value={editingNote.title}
               onChange={(e) => setEditingNote(prev => ({ ...prev, title: e.target.value }))}
-              className="w-full text-xl font-medium text-[#345995] placeholder:text-[#b4c0d3] bg-transparent focus:outline-none"
+              onFocus={() => setActiveField('title')}
+              className="w-full text-xl font-medium bg-transparent focus:outline-none placeholder:text-[#b4c0d3]"
+              style={{
+                color: titleStyle.color,
+                fontWeight: titleStyle.fontWeight,
+                fontStyle: titleStyle.fontStyle,
+                textDecoration: titleStyle.textDecoration
+              }}
             />
             <div className="relative">
               <div
                 ref={textareaRef}
                 contentEditable
                 className="w-full h-[calc(100vh-300px)] mt-4 text-[#345995] focus:outline-none"
-                onInput={(e) => setEditingNote(prev => ({ ...prev, content: e.target.innerHTML }))}
+                onInput={(e) => {
+                  // innerHTML'i state'e kaydet (formatlar da dahil)
+                  setEditingNote(prev => ({ ...prev, content: e.target.innerHTML }))
+                }}
+                onFocus={() => setActiveField('content')}
+                tabIndex={0}
+                suppressContentEditableWarning={true} // Bu warning'i gizler
               />
             </div>
           </div>
@@ -256,7 +331,16 @@ export default function NoteDetails({
         </div>
       ) : note ? ( // Add conditional check for note
         <div className="p-6">
-          <h1 className="text-xl font-medium text-[#345995]">{note.title}</h1>
+          <h1 
+            className="text-xl font-medium"
+            style={{
+              color: note.titleStyle?.color || '#345995',
+              fontWeight: note.titleStyle?.fontWeight || 'normal',
+              fontStyle: note.titleStyle?.fontStyle || 'normal',
+              textDecoration: note.titleStyle?.textDecoration || 'none'
+            }}
+            dangerouslySetInnerHTML={{ __html: note.title }}
+          />
           <div 
             className="mt-4 text-[#345995]"
             dangerouslySetInnerHTML={{ __html: note.content }}
