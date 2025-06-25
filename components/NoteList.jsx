@@ -249,16 +249,6 @@ export default function NoteList({ notes: initialNotes, currentFolder }) {
             className="w-8 h-8 flex-shrink-0 flex items-center justify-center bg-[#EAC435] hover:bg-[#d4b02f] text-white rounded-lg transition-all duration-200 relative group shadow-sm ml-3"
           >
             <span className="text-xl">+</span>
-            {/* Updated Tooltip */}
-            <div className="absolute left-1/2 transform -translate-x-1/2 pointer-events-none opacity-0 group-hover:opacity-100 transition-all duration-200" 
-                 style={{ top: 'calc(100% + 0.5rem)', zIndex: 50 }}>
-              {/* Arrow */}
-              <div className="absolute left-1/2 transform -translate-x-1/2 -top-1 w-2 h-2 bg-[#345995] rotate-45"></div>
-              {/* Tooltip content */}
-              <div className="bg-[#345995] text-white px-3 py-1.5 rounded-lg text-sm whitespace-nowrap shadow-lg">
-                New Note
-              </div>
-            </div>
           </button>
         </header>
 

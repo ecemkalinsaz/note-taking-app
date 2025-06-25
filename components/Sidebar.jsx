@@ -93,13 +93,6 @@ export default function Sidebar() {
               title="New folder"
             >
               <span className="text-xl">+</span>
-              <div className="absolute left-1/2 transform -translate-x-1/2 pointer-events-none opacity-0 group-hover:opacity-100 transition-all duration-200" 
-                   style={{ top: 'calc(100% + 0.5rem)', zIndex: 50 }}>
-                <div className="absolute left-1/2 transform -translate-x-1/2 -top-1 w-2 h-2 bg-[#345995] rotate-45"></div>
-                <div className="bg-[#345995] text-white px-3 py-1.5 rounded-lg text-sm whitespace-nowrap shadow-lg">
-                  New Folder
-                </div>
-              </div>
             </button>
           </div>
           <nav className="space-y-1">
