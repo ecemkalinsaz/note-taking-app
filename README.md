@@ -37,9 +37,9 @@ A modern, feature-rich note-taking application built with **Next.js** and **Reac
 - Date-based organization
 - Pin important notes
 
-![App Screenshot](./assets/note-taking-app-1.png)
+![App Screenshot](./assets/note-taking-app-1.jpg)
 
-![App Interface](./assets/note-taking-app-2.png)
+![App Interface](./assets/note-taking-app-2.jpg)
 
 ## 🚀 Getting Started
 
