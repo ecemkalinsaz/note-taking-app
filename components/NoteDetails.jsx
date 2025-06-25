@@ -24,7 +24,8 @@ export default function NoteDetails({
     color: '#345995',
     fontWeight: 'normal',
     fontStyle: 'normal',
-    textDecoration: 'none'
+    textDecoration: 'none',
+    fontSize: '20px' // Başlık için daha büyük default
   })
 
   // Reset both title and content when isCreating changes
@@ -38,7 +39,8 @@ export default function NoteDetails({
         color: '#345995',
         fontWeight: 'normal',
         fontStyle: 'normal',
-        textDecoration: 'none'
+        textDecoration: 'none',
+        fontSize: '20px'
       })
       if (textareaRef.current) {
         textareaRef.current.innerHTML = ''
@@ -52,7 +54,8 @@ export default function NoteDetails({
         color: '#345995',
         fontWeight: 'normal',
         fontStyle: 'normal',
-        textDecoration: 'none'
+        textDecoration: 'none',
+        fontSize: '20px'
       })
       // setTimeout ile DOM update'ini bekle
       setTimeout(() => {
@@ -78,7 +81,6 @@ export default function NoteDetails({
       document.execCommand(command, false, value)
       textareaRef.current?.focus()
       
-      // Format uygulandıktan sonra state'i güncelle
       setTimeout(() => {
         if (textareaRef.current) {
           setEditingNote(prev => ({ 
@@ -89,11 +91,21 @@ export default function NoteDetails({
       }, 10)
       
     } else if (activeField === 'title') {
-      // Title için stil uygula
       setTitleStyle(prev => {
         switch (command) {
           case 'foreColor':
             return { ...prev, color: value }
+          case 'fontSize':
+            // Başlık için daha büyük font size mapping
+            const titleSizeMap = {
+              '1': '16px',   // Small title
+              '2': '18px',   // 
+              '3': '20px',   // Normal title (default)
+              '4': '24px',   // Medium title
+              '5': '28px',   // Large title
+              '6': '32px'    // Extra Large title
+            }
+            return { ...prev, fontSize: titleSizeMap[value] || '20px' }
           case 'bold':
             return { ...prev, fontWeight: prev.fontWeight === 'bold' ? 'normal' : 'bold' }
           case 'italic':
@@ -197,7 +209,8 @@ export default function NoteDetails({
                 color: titleStyle.color,
                 fontWeight: titleStyle.fontWeight,
                 fontStyle: titleStyle.fontStyle,
-                textDecoration: titleStyle.textDecoration
+                textDecoration: titleStyle.textDecoration,
+                fontSize: titleStyle.fontSize // Font size ekle
               }}
             />
             <div className="relative">
@@ -337,7 +350,8 @@ export default function NoteDetails({
               color: note.titleStyle?.color || '#345995',
               fontWeight: note.titleStyle?.fontWeight || 'normal',
               fontStyle: note.titleStyle?.fontStyle || 'normal',
-              textDecoration: note.titleStyle?.textDecoration || 'none'
+              textDecoration: note.titleStyle?.textDecoration || 'none',
+              fontSize: note.titleStyle?.fontSize || '20px' // Font size ekle
             }}
             dangerouslySetInnerHTML={{ __html: note.title }}
           />
